@@ -63,10 +63,10 @@ arp_pkt_input(unsigned int hooknum,
 	{
 		goto EXIT;
 	}
-	if(!arp_hashlimit_mt(arp,inuse_node))//낚법땍醵쪽
+	if(!arp_hashlimit_mt(arp,inuse_node))
 	{
 		arp_pkts_count++;
-		//낚법땍醵쪽橙땔폴arp관
+
 		if ((net_ratelimit()) && (arp_pkts_count%PKT_RECORD_LIMIT == 0))
 		{
 			printk(KERN_WARNING "arp input : arp op [%x] src [%x] target [%x] ##over limit --drop##\n",
