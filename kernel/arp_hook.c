@@ -19,7 +19,6 @@
 #include <linux/jhash.h>
 
 #include "arp_hash.h"
-#include "../../igwlog/include/igw_log_kernel.h"
 
 #define PKT_RECORD_LIMIT (500)
 extern unsigned int arp_pkts_count;
@@ -34,8 +33,6 @@ arp_pkt_input(unsigned int hooknum,
 	struct eth_arphdr * arp;
 	u32 dst,src;
 	struct netdev *inuse_node;
-	char log_msg[LOG_MSG_LEN] = {0};
-	char log_msg_china[LOG_MSG_LEN] = {0};
 
 	if (!in)
 	{
@@ -66,17 +63,14 @@ arp_pkt_input(unsigned int hooknum,
 	{
 		goto EXIT;
 	}
-	if(!arp_hashlimit_mt(arp,inuse_node))//超过设定速率
+	if(!arp_hashlimit_mt(arp,inuse_node))//雮氹矔顏囯晬閱奠
 	{
 		arp_pkts_count++;
-		//超过设定速率则丢弃arp包
+		//雮氹矔顏囯晬閱奠姗欕晹韽碼rp甏�
 		if ((net_ratelimit()) && (arp_pkts_count%PKT_RECORD_LIMIT == 0))
 		{
 			printk(KERN_WARNING "arp input : arp op [%x] src [%x] target [%x] ##over limit --drop##\n",
 			ntohs(arp->ar_op),ntohl(arp->ar_sip),ntohl(arp->ar_tip));
-			snprintf(log_msg,LOG_MSG_LEN,"[FIREWALL] arp_flood_defense drop pkts from device:%s",inuse_node->name);
-			snprintf(log_msg_china,LOG_MSG_LEN,"[防火墙] ARP攻击防御丢弃从%s进入的ARP攻击包",inuse_node->name);
-	        LOG(6,4,log_msg,log_msg_china);
 		}
 		return NF_DROP;
 	}
